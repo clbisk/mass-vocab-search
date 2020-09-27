@@ -1,5 +1,6 @@
 import React from 'react';
-import '../../App.css';
+import TracauShoutout from '../TracauShoutout/TracauShoutout';
+import '../../App.scss';
 import './SearchedText.scss';
 
 class SearchedText extends React.Component {
@@ -10,7 +11,12 @@ class SearchedText extends React.Component {
                     <div className="vertical-centered">{this.props.text}</div>
                 </div>
                 
-                <button onClick={this.props.returnToSearch}>Search again</button>
+                <div class="footer">
+                    <div class="submit-search">
+                        <button onClick={this.props.returnToSearch}>Search again</button>    
+                    </div>
+                    <TracauShoutout></TracauShoutout>
+                </div>
             </div>
         );
     }

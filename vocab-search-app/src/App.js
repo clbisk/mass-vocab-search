@@ -1,7 +1,8 @@
 import React from 'react';
 import InputText from './components/InputText/InputText';
 import SearchedText from './components/SearchedText/SearchedText';
-import './App.css';
+import './App.scss';
+import axios from "axios";
 
 class App extends React.Component {
 	constructor() {
@@ -11,7 +12,12 @@ class App extends React.Component {
 	}
 
 	search(text) {
-		if (text === "") text = "Oops! Looks like no text was input. Would you like to search again?";
+		if (text === "")
+			text = "Oops! Looks like no text was input. Would you like to search again?";
+		else {
+			this.tracauSearch(text);
+		}
+
 		this.setState(state => ({
 			searched: !state.searched,
 			searchedText: text
@@ -33,6 +39,15 @@ class App extends React.Component {
 			</div>
 		);
 	}
+
+	tracauSearch(text) {
+		axios.get("https://api.tracau.vn/" + tracau_API_key + "/s/" + text + "/vi").then(result => {
+			var tracauData = result.data.tratu.length > 0? result.data.tratu[0].fields.fulltext : result.data;
+			console.log(tracauData);
+		});
+	}
 }
+
+const tracau_API_key = "WBBcwnwQpV89";
 
 export default App;

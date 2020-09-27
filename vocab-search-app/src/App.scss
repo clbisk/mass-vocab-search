@@ -1,7 +1,10 @@
+$tracau-banner-height: 3em;
+$stylin-bg-color: #282c34;
+
 .upper-flex {
-    display: flex;
-    width: 100%;
-    justify-content: center;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 svg {
@@ -26,7 +29,7 @@ svg {
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: $stylin-bg-color;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
