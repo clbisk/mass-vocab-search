@@ -6,22 +6,24 @@ import './App.css';
 class App extends React.Component {
 	constructor() {
 		super();
-		this.state = {searched: false};
+		this.state = { searched: false, searchedText: "" };
+		this.search = this.search.bind(this)
 	}
 
-	search() {
-		console.log(this);
+	search(text) {
+		if (text === "") text = "Oops! Looks like no text was input. Would you like to search again?";
 		this.setState(state => ({
-			searched: !state.searched
+			searched: !state.searched,
+			searchedText: text
 		}));
 	}
 
 	render() {
-		return this.state.searched? (
+		return this.state.searched ? (
 			<div className="App">
-				<header className="App-header">
-					<SearchedText returnToSearch={this.search}></SearchedText>
-				</header>
+				<SearchedText text={this.state.searchedText}
+					returnToSearch={this.search}>
+				</SearchedText>
 			</div>
 		) : (
 			<div className="App">
