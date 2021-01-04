@@ -11,8 +11,8 @@ class SearchedText extends React.Component {
                     <div className="vertical-centered">{this.props.text}</div>
                 </div>
                 
-                <div class="footer">
-                    <div class="submit-search">
+                <div className="footer">
+                    <div className="submit-search">
                         <button onClick={this.props.returnToSearch}>Search again</button>    
                     </div>
                     <TracauShoutout></TracauShoutout>
