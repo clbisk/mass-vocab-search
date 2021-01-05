@@ -13,7 +13,6 @@ class InputText extends React.Component {
 
     detectHotkeySubmit(event, curText) {
         if (event.shiftKey && event.key === "Enter") {
-            console.log("hotkey detected");
             this.props.submitSearch(curText);
         }
     }
