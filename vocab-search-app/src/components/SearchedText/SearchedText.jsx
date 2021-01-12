@@ -12,7 +12,8 @@ class SearchedText extends React.Component {
     }
 
     search(text) {
-		const words = text.split(" ");
+        const words = text.split(/[ X\n]/);
+        console.log(words);
 			
         var lastWordDefined = -1;
         var definitions = {};
@@ -59,7 +60,11 @@ class SearchedText extends React.Component {
         }
     }
 
-	tracauSearch(text) {
+	tracauSearch(searchedText) {
+        // strip special characters first
+        const punctuation = /[.,/#!$%^&*;:{}=\-_`~()]/g;
+        const text = searchedText.trim().replace(punctuation, "");
+
 		return axios.get("https://api.tracau.vn/" + tracau_API_key + "/s/" + text + "/vi").then(result => {
 			if (result.data.tratu.length <= 0)
 				return false;
@@ -101,7 +106,6 @@ class SearchedText extends React.Component {
 
     componentDidMount() {
         this.search(this.props.text).then((result) => {
-            console.log(result);
             this.setState({ isLoaded: true, searchResults: result});
         })
     }
@@ -132,7 +136,7 @@ class SearchedText extends React.Component {
                     <div className="vertical-centered">
                         <div className="words-and-definitions">
                             {
-                                this.props.text.split(" ").map((word, i) => {
+                                this.props.text.split(/[ X\n]/).map((word, i) => {
                                     var lastWordDefined = -1;
                                     // if this word was not part of a previous compound word...
                                     if (lastWordDefined === i)
