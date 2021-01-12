@@ -12,9 +12,24 @@ $stylin-bg-color: #282c34;
     .text-display {
         min-height: calc(100vh - #{$tracau-banner-height});
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
+
+
+
+        .words-and-definitions {
+            display: flex;
+            flex-direction: row;
+
+            .DefinedWord {
+                margin-right: 0.25em;
+            }
+
+            .definition-not-found {
+                color: gray;
+                margin-right: 0.25em;
+            }
+        }
     }
 
     .footer {

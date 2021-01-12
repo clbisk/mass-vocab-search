@@ -10,8 +10,7 @@ class DefinedWord extends React.Component {
             <Popover id={this.props.word}>
                 <Popover.Title as="h3">{this.props.word}</Popover.Title>
                 <Popover.Content>
-                    {/* <Definition defnsList={this.props.defn} /> */}
-                    hiii
+                    <Definition defnsList={this.props.defn} />
                 </Popover.Content>
             </Popover>
         );

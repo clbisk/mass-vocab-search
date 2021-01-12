@@ -3,44 +3,61 @@ import TracauShoutout from '../TracauShoutout/TracauShoutout';
 import DefinedWord from '../DefinedWord/DefinedWord';
 import '../../App.scss';
 import './SearchedText.scss';
-import axios from "axios";
+import axios from 'axios';
 
 class SearchedText extends React.Component {
+    constructor() {
+        super();
+        this.state = { isLoaded: false, searchResults: {} };
+    }
+
     search(text) {
 		const words = text.split(" ");
 			
         var lastWordDefined = -1;
         var definitions = {};
 
-        //TODO: gonna have to make this boi asynchronous yucky yucky
-        words.forEach((word, i) => {
-            console.log(word, i);
-
-            // if this word was not part of a previous compound word
+        const promises = words.map((word, i) => {
+            // if this word was not part of a previous compound word...
             if (lastWordDefined === i)
-                return;
+                return Promise.resolve();
 
             // check for compound words first
-            const compoundWordDef = (words.length > i + 1)? this.tracauSearch(word + words[i + 1]) : null;
-            if (compoundWordDef) {
-                definitions[word + words[i + 1]] = compoundWordDef;
-                lastWordDefined = i + 1;
-                return;
-            }
-
-            // not part of a compound word
-            const def = this.tracauSearch(word);
-            if (def)
-                definitions[word] = def;
-            // if it could not be defined, we will simply gray out the word
-            else
-                definitions[word] = null;
-
-            lastWordDefined = i;
+            return this.searchCompoundWord(words, i).then((compoundDef) => {
+                if (compoundDef && compoundDef.length > 0) {
+                    console.log(compoundDef);
+                    // make sure this is a full definition
+                    if (compoundDef.length > 1 || !compoundDef[0].startsWith("See ")) {
+                        definitions[word + " " + words[i + 1]] = compoundDef;
+                        lastWordDefined = i + 1;
+                        return Promise.resolve();
+                    }
+                }
+                
+                // not part of a compound word
+                return this.tracauSearch(word).then(def => {
+                    if (def && def.length > 0) {
+                        definitions[word] = def;
+                        lastWordDefined = i;
+                    }
+                    // if it could not be defined, we will simply gray out the word
+                    return Promise.resolve();
+                });
+            });
         });
 
-        return definitions;
-	}
+        return Promise.all(promises).then(() => {
+            return definitions;
+        })
+    }
+    
+    searchCompoundWord(words, i) {
+        if (words.length > i + 1) {
+            return this.tracauSearch(words[i] + " " + words[i + 1]);
+        } else {
+            return Promise.resolve();
+        }
+    }
 
 	tracauSearch(text) {
 		return axios.get("https://api.tracau.vn/" + tracau_API_key + "/s/" + text + "/vi").then(result => {
@@ -67,52 +84,89 @@ class SearchedText extends React.Component {
 			entryList.slice(1).forEach(def => {
 				var parsedDef = def.slice(0, def.indexOf('</td>'));
 
-				// check if a similar word's definition was returned
-				const seeOtherTag = 'Xem <font color="#1371BB">';
-				if (parsedDef.startsWith(seeOtherTag)) {
-					const seeOtherEnd = parsedDef.indexOf('</font>')
+				// check if tracau is trying to redirect user to a similar word
+                const seeOtherTag = 'Xem <font color="#1371BB">';
+                const seeOtherTagLower = 'xem <font color="#1371BB">';
+                const seeOtherEnd = parsedDef.indexOf('</font>')
+				if (parsedDef.startsWith(seeOtherTag) || parsedDef.startsWith(seeOtherTagLower)) {					
 					parsedDef = "See " + parsedDef.slice(seeOtherTag.length, seeOtherEnd);
-				}
+                }
 				
 				defnsList.push(parsedDef);
 			});
             
 			return defnsList;
 		});
-	}
+    }
+
+    componentDidMount() {
+        this.search(this.props.text).then((result) => {
+            console.log(result);
+            this.setState({ isLoaded: true, searchResults: result});
+        })
+    }
 
     render() {
-        var searchResults;
-        if (this.props.text !== "") {
-            searchResults = this.search(this.props.text);
-            console.log(searchResults);
-        }
-
-        const mainText = this.props.text === ""?
-            (
-                <div>"Oops! Looks like no text was input. Would you like to search again?"</div>
-            ) : (
-                <div className="defined-words">
-                    {Object.keys(searchResults).map((word, i) => {
-                        const defn = searchResults[word];
-                        return <DefinedWord word={word} defn={defn} key={i} />
-                    })}
+        const footer = (
+            <div className="footer">
+                <div className="submit-search">
+                    <button onClick={this.props.returnToSearch}>Search again</button>    
                 </div>
-            );
-            
+                <TracauShoutout></TracauShoutout>
+            </div>
+        );
 
-        return (
+        return this.props.text === ""? (
             <div className="SearchedText">
                 <div className="text-display">
-                    <div className="vertical-centered">{mainText}</div>
+                    <div className="vertical-centered">
+                        <div>Oops! Looks like no text was input. Would you like to search again?</div>
+                        </div>
                 </div>
                 
-                <div className="footer">
-                    <div className="submit-search">
-                        <button onClick={this.props.returnToSearch}>Search again</button>    
+                {footer}
+            </div>
+        ) : this.state.isLoaded? (
+            <div className="SearchedText">
+                <div className="text-display">
+                    <div className="vertical-centered">
+                        <div className="words-and-definitions">
+                            {
+                                this.props.text.split(" ").map((word, i) => {
+                                    var lastWordDefined = -1;
+                                    // if this word was not part of a previous compound word...
+                                    if (lastWordDefined === i)
+                                        return;
+
+                                    // check for compound words first
+                                    const compoundWord = word + " " + this.props.text[i + 1];
+                                    if (compoundWord in this.state.searchResults) {
+                                        const defn = this.state.searchResults[compoundWord];
+                                        return <DefinedWord word={compoundWord} defn={defn} key={i} />
+                                    }
+
+                                    // make sure a defition was found
+                                    if (word in this.state.searchResults) {
+                                        const defn = this.state.searchResults[word];
+                                        return <DefinedWord word={word} defn={defn} key={i} />
+                                    }
+                                    
+                                    return (<div className="definition-not-found" key={i}>{word}</div>)
+                                })
+                            }
+                        </div>
                     </div>
-                    <TracauShoutout></TracauShoutout>
                 </div>
+                
+                {footer}
+            </div>
+        ) : (
+            <div className="SearchedText">
+                <div className="text-display">
+                    <div className="vertical-centered">loading...</div>
+                </div>
+                
+                {footer}
             </div>
         );
     }

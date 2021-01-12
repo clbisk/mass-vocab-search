@@ -7,7 +7,7 @@ class App extends React.Component {
 	constructor() {
 		super();
 		this.state = { searched: false, searchedText: "" };
-		this.toggleSearch = this.toggleSearch.bind(this)
+		this.toggleSearch = this.toggleSearch.bind(this);
 	}
 
 	toggleSearch(text) {
