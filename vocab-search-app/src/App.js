@@ -1,34 +1,21 @@
 import React from 'react';
-import InputText from './components/InputText/InputText';
-import SearchedText from './components/SearchedText/SearchedText';
+import TextInput from './components/TextInput/TextInput';
+import ImageInput from './components/ImageInput/ImageInput';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.scss';
 
 class App extends React.Component {
-	constructor() {
-		super();
-		this.state = { searched: false, searchedText: "" };
-		this.toggleSearch = this.toggleSearch.bind(this);
-	}
-
-	toggleSearch(text) {
-		this.setState(state => ({
-			searched: !state.searched,
-			searchedText: text
-		}));
-	}
 
 	render() {
-		return this.state.searched ? (
+		return (
 			<div className="App">
-				<SearchedText text={this.state.searchedText}
-					returnToSearch={_ => this.toggleSearch("")}>
-				</SearchedText>
-			</div>
-		) : (
-			<div className="App">
-				<header className="App-header">
-					<InputText submitSearch={this.toggleSearch}></InputText>
-				</header>
+				<Router>
+					<Switch>
+						<Route path="/text" component={TextInput} />
+						<Route path="/img" component={ImageInput} />
+						<Route exact path="/" component={TextInput} />
+					</Switch>
+				</Router>
 			</div>
 		);
 	}
