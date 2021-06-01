@@ -2,7 +2,6 @@
 
 # secret keys
 vision_api_key.json
-yandex_key.json
 
 # dependencies
 /node_modules
