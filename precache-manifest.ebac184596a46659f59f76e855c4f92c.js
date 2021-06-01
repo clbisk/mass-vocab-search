@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "14940f2baf71fc6a51f119205bf6b70f",
+    "revision": "7cf9e68174063b07eb66a68a065c5f3d",
     "url": "/mass-vocab-search/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/mass-vocab-search/static/css/2.c465c46e.chunk.css"
   },
   {
-    "revision": "94deb308f49f38f04ca3",
+    "revision": "822a202faa3e3f116f21",
     "url": "/mass-vocab-search/static/css/main.73ee7956.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/mass-vocab-search/static/js/2.59b0744b.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "94deb308f49f38f04ca3",
-    "url": "/mass-vocab-search/static/js/main.9f66c779.chunk.js"
+    "revision": "822a202faa3e3f116f21",
+    "url": "/mass-vocab-search/static/js/main.765b8108.chunk.js"
   },
   {
     "revision": "beb2be39e213d3ac8d4f",
