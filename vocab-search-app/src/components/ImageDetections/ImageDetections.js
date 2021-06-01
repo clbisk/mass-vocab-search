@@ -9,8 +9,13 @@ class ImageDetections extends React.Component {
     }
 
     renderDefinition(detection) {
-        if (detection.definition && detection.definition.def.length > 0) {
+        if (detection.definition.def && detection.definition.def.length > 0) {
             const defnsList = detection.definition.def[0].tr.map(tr => {
+                return (<li>{tr.text}</li>);
+            });
+            return (<ol>{defnsList}</ol>);
+        } else if (detection.definition.translations.length > 0) {
+            const defnsList = detection.definition.translations.map(tr => {
                 return (<li>{tr.text}</li>);
             });
             return (<ol>{defnsList}</ol>);

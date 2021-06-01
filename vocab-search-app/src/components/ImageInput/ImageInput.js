@@ -4,6 +4,7 @@ import ImageUploader from 'react-images-upload';
 import ImageDetections from '../ImageDetections/ImageDetections';
 import './ImageInput.scss';
 import YANDEX_API_KEY from '../../yandex_key.json';
+import DEEPL_API_KEY from '../../deepL_api_key.json';
 
 class ImageInput extends React.Component {
     constructor() {
@@ -51,7 +52,7 @@ class ImageInput extends React.Component {
     }
 
     async getOCR() {
-        return axios.post(`http://localhost:4000/detect-document-text`, { img: this.state.img_buffers[0] }).then(result => {
+        return axios.post(`https://us-east4-true-bit-315318.cloudfunctions.net/documentTextDetection`, { img: this.state.img_buffers[0] }).then(result => {
             this.setState({ textDetections: result.data.textAnnotations, fullText: result.data.fullTextAnnotation }, this.getDefinitions);
         });
     }
@@ -71,7 +72,23 @@ class ImageInput extends React.Component {
         });
 
         Promise.all(defnPromises).then(results => {
-            this.setState({ definedDetections: results.filter(val => val !== undefined), detectionsLoaded: true });
+            const searchAgainPromises = results.map(detection => {
+                if (detection === undefined) return;
+
+                if (detection.def === undefined || detection.def.length === 0) {
+                    const punctuation = /[.,/#!$%^&*;:{}=\-_`~()]/g;
+                    const text = detection.description.replace(punctuation, "").toLowerCase();
+
+                    return axios.get(`https://api-free.deepl.com/v2/translate?auth_key=${DEEPL_API_KEY.key}&text=${text}&target_lang=EN`).then(defn => {
+                        Object.assign(detection, { definition: defn.data });
+                        return detection;
+                    });
+                } else { return detection }
+            })
+
+            Promise.all(searchAgainPromises).then(results => {
+                this.setState({ definedDetections: results.filter(val => val !== undefined), detectionsLoaded: true });
+            });
         })
     }
 
